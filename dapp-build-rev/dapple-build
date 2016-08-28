@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+tar xf src.tgz --strip-components=1
+
+src=$(find . -path ./dapple_packages -prune -o -name \*.sol -print)
+
+pkgs="dapple=/var/task/dapple/constants "
+for pkg in dapple_packages/*; do
+  pkgs+="$(basename $pkg)=$(pwd)/$pkg/contracts "
+done
+
+for x in $src; do
+  srcs+="$(basename $x)=$(pwd)/$x "
+done
+
+echo solc --combined-json abi,ast,bin,interface $pkgs $srcs $src
+solc --combined-json abi,bin,interface $pkgs $srcs $src > build.json

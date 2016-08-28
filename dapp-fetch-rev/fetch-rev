@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -ex
+git clone "$1" repo
+git -C repo checkout -b rev "$2"
+git -C repo submodule update --init --recursive
+tar zcf rev.tgz repo
