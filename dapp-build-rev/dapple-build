@@ -12,5 +12,4 @@ for x in $src; do
   srcs+="$(basename $x)=$(pwd)/$x "
 done
 
-echo solc --combined-json abi,ast,bin,interface $pkgs $srcs $src
 solc --combined-json abi,bin,interface $pkgs $srcs $src > build.json

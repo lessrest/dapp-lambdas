@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -ex
+exec >result.json
+echo -n "{"
+for x in $(quickrun --list-contracts < src.json); do
+  if [[ "$x" =~ .Test$ ]]; then
+    echo -n "\"$x\":"
+    quickrun --test-contract=$x --logs --diff --json < src.json
+  fi
+done
+echo -n "}"
