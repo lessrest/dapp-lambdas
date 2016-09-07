@@ -4,6 +4,8 @@ exec >result.json
 echo -n "{"
 for x in $(quickrun --list-contracts < src.json); do
   if [[ "$x" =~ .Test$ ]]; then
+    if [[ $i > 0 ]]; then echo -n ","; fi
+    i=$((i+1))
     echo -n "\"$x\":"
     quickrun --test-contract=$x --logs --diff --json < src.json
   fi
