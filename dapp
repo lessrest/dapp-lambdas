@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -ex
+
+req_arn=arn:aws:sns:eu-central-1:241036177239:dapp-rev-requests
+
+if [[ $1 == ls ]]; then
+  aws s3 ls s3://dapp-rev-archives
+  aws s3 ls s3://dapp-rev-builds
+  aws s3 ls s3://dapp-rev-results
+elif [[ $1 == rm-rev ]]; then
+  aws s3 rm s3://dapp-rev-archives/$2.tgz || true
+  aws s3 rm s3://dapp-rev-builds/$2.tgz || true
+  aws s3 rm s3://dapp-rev-results/$2.json || true
+elif [[ $1 == fetch ]]; then
+  aws sns publish --topic-arn $req_arn --message \
+    "{\"origin\":\"$2\",\"rev\":\"$3\"}"
+else
+  echo nope >&2
+  exit 1
+fi
