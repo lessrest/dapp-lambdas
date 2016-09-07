@@ -14,6 +14,12 @@ elif [[ $1 == rm-rev ]]; then
 elif [[ $1 == fetch ]]; then
   aws sns publish --topic-arn $req_arn --message \
     "{\"origin\":\"$2\",\"rev\":\"$3\"}"
+elif [[ $1 == logs ]]; then
+  # $2 should be fetch, build, or test
+  awslogs get /aws/lambda/dapp-$2-rev ALL --start="1h ago" --timestamp |
+    sed '/^$/d'
+elif [[ $1 == cat-result ]]; then
+  aws s3 cp --quiet s3://dapp-rev-results/$2.json /dev/stdout | jq .
 else
   echo nope >&2
   exit 1
