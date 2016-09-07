@@ -1,12 +1,18 @@
 #!/usr/bin/env bash
 shopt -s nullglob
-
+set -ex
 tar xf src.tgz --strip-components=1
 
-src=$(find . -path ./dapple_packages -prune -o -name \*.sol -print)
+src=$(find . -path ./dapple_packages -prune -o -path ./.dapple -prune -o \
+  -name \*.sol -print)
 
 pkgs="dapple=/var/task/dapple/constants "
 for pkg in dapple_packages/* .dapple/packages/*; do
+  for x in $pkg/contracts/*.sol; do
+    ls -l "$(pwd)/$x"
+#    pkgs+="$(basename $pkg):$(basename $x)=$(pwd)/$x "
+    pkgs+="$(basename $x)=$(pwd)/$x "
+  done
   pkgs+="$(basename $pkg)=$(pwd)/$pkg/contracts "
 done
 
