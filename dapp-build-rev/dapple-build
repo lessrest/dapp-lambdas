@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
+shopt -s nullglob
+
 tar xf src.tgz --strip-components=1
 
 src=$(find . -path ./dapple_packages -prune -o -name \*.sol -print)
 
 pkgs="dapple=/var/task/dapple/constants "
-for pkg in dapple_packages/*; do
+for pkg in dapple_packages/* .dapple/packages/*; do
   pkgs+="$(basename $pkg)=$(pwd)/$pkg/contracts "
 done
 
