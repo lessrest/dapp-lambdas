@@ -1,17 +1,21 @@
 #!/usr/bin/env bash
 shopt -s nullglob
 set -ex
-tar xf src.tgz --strip-components=1
+mkdir src
+cd src
+tar xf ../src.tgz --strip-components=1
 
 src=$(find . -path ./dapple_packages -prune -o -path ./.dapple -prune -o \
   -name \*.sol -print)
+
+tests=$(find . -path ./dapple_packages -prune -o -path ./.dapple -prune -o \
+  -iname \*test.sol -print)
 
 pkgs="dapple=/var/task/dapple/constants "
 for pkg in dapple_packages/* .dapple/packages/*; do
   for x in $pkg/contracts/*.sol; do
     ls -l "$(pwd)/$x"
-#    pkgs+="$(basename $pkg):$(basename $x)=$(pwd)/$x "
-    pkgs+="$(basename $x)=$(pwd)/$x "
+    pkgs+="$(basename $pkg):$(basename $x)=$(pwd)/$x "
   done
   pkgs+="$(basename $pkg)=$(pwd)/$pkg/contracts "
 done
@@ -20,4 +24,11 @@ for x in $src; do
   srcs+="$(basename $x)=$(pwd)/$x "
 done
 
-solc --combined-json abi,bin,interface $pkgs $srcs $src > build.json
+mkdir ../build
+for test in $tests; do
+  solc --combined-json abi,bin,interface $pkgs $srcs "$test" > ../build/test-$i.json
+  i=$((i+1))
+done
+
+cd ..
+tar czf build.tgz build

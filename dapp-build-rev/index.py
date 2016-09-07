@@ -22,8 +22,8 @@ def main(event, context):
     subprocess.check_call(["dapple-build"])
     
     boto3.client("s3").upload_file(
-        "build.json", "dapp-rev-builds", "{}.json".format(rev)
+        "build.tgz", "dapp-rev-builds", "{}.tgz".format(rev)
     )
 
-    print "Uploaded {}.json".format(rev)
+    print "Uploaded {}.tgz".format(rev)
     
