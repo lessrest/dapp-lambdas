@@ -15,20 +15,25 @@ pkgs="dapple=/var/task/dapple/constants "
 for pkg in dapple_packages/* .dapple/packages/*; do
   for x in $pkg/contracts/*.sol; do
     ls -l "$(pwd)/$x"
-    pkgs+="$(basename $pkg):$(basename $x)=$(pwd)/$x "
+    pkgs+="$(pwd)/$pkg:$(basename $x)=$(pwd)/$x "
   done
-  pkgs+="$(basename $pkg)=$(pwd)/$pkg/contracts "
+  pkgs+="$(basename $pkg)/=$(pwd)/$pkg/contracts/ "
 done
 
 for x in $src; do
   srcs+="$(basename $x)=$(pwd)/$x "
 done
 
-mkdir ../build
-for test in $tests; do
-  solc --combined-json abi,bin,interface $pkgs $srcs "$test" > ../build/test-$i.json
-  i=$((i+1))
+mkdir ../contracts
+mkdir ../tests
+for file in $src; do
+  solc --combined-json asm,abi,bin,interface $pkgs $srcs "$file" \
+    > ../contracts/$(basename $file).json
+done
+for file in $tests; do
+  solc --combined-json asm,abi,bin,interface $pkgs $srcs "$file" \
+    > ../tests/$(basename $file).json
 done
 
 cd ..
-tar czf build.tgz build
+tar czf build.tgz contracts tests

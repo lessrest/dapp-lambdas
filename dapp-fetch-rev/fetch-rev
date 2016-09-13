@@ -2,5 +2,10 @@
 set -ex
 git clone "$1" repo
 git -C repo checkout -b rev "$2"
-git -C repo submodule update --init --recursive
+
+if [ -e repo/.gitmodules ]; then
+  sed -i 's~git@github.com:~https://github.com/~' repo/.gitmodules
+  git -C repo submodule update --init --recursive
+fi
+
 tar zcf rev.tgz repo

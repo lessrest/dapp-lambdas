@@ -9,11 +9,15 @@ def main(event, context):
     origin = msg["origin"]
     rev = msg["rev"]
 
-    os.chdir("/var/task")
-    os.environ["GIT_EXEC_PATH"] = "{}/git/libexec/git-core".format(os.getcwd())
-    os.environ["PATH"] = "{}:{}".format(os.getcwd(), os.environ["PATH"])
-    os.environ["PATH"] = "{}/git/bin:{}".format(os.getcwd(), os.environ["PATH"])
-    os.chdir(tempfile.mkdtemp())
+    cwd = "/var/task"
+    os.chdir(cwd)
+
+    os.environ["GIT_EXEC_PATH"] = "{}/git/libexec/git-core".format(cwd)
+    os.environ["PATH"] = "{}:{}".format(cwd, os.environ["PATH"])
+    os.environ["PATH"] = "{}/git/bin:{}".format(cwd, os.environ["PATH"])
+
+    tmp = tempfile.mkdtemp()
+    os.chdir(tmp)
 
     subprocess.check_call(["fetch-rev", origin, rev])
 
